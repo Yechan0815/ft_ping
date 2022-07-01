@@ -14,20 +14,32 @@ string_to_parser_type (char * type)
 PARSER_PARAMETER *
 parser_get_parameter (PARSER_ENV * env, char flag)
 {
-	for (int i = 0; i < 
+	for (unsigned int i = 0; i < env->size; i++)
+	{
+		if (env->parameters[i]->flag == flag)
+			return env->parameters[i];
+	}
+	return NULL;
 }
 
-void
+PARSER_ERROR
 parser_add (PARSER_ENV * env, char flag, char * type, char * description)
 {
-	static unsigned int size = 0;
 	PARSER_PARAMETER * prm;
 
 	prm = (PARSER_PARAMETER *) malloc (sizeof(PARSER_PARAMETER));
+	if (!prm)
+	{
+		return ALLOC_FAIL;
+	}
 	prm->flag = flag;
 	prm->type = string_to_parser_type (type);
 	prm->description = strdup(description);
-	env->parameters[size] = prm;
+	if (!prm->description)
+	{
+		return ALLOC_FAIL;
+	}
+	env->parameters[env->size++] = prm;
 
-	env->size = ++size;
+	return NO_ERROR;
 }

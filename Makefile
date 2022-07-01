@@ -1,7 +1,7 @@
 CC			= gcc
 CFLAGS		= #-Wall -Wextra -Werror
 
-PARSER		= parser.c env.c
+PARSER		= parser.c env.c parameter.c type.c free.c
 MAIN		= main.c
 
 SRCS		= $(addprefix srcs/, $(MAIN)) \

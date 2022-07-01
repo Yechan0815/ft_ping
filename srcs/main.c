@@ -6,10 +6,9 @@ main (int argc, char * argv[])
 {
 	PARSER_INFO parserinfo;
 
+	memset (&parserinfo, 0x0, sizeof (PARSER_INFO));
 	parser_add(&parserinfo.env, 'f', "bool", "description 1");
 	parser_add(&parserinfo.env, 't', "int", "description 2");
-
-	printf("%d\n", parserinfo.env.size);
 
 	if (!parser(&parserinfo, argc, argv))
 		return 0;
@@ -17,6 +16,8 @@ main (int argc, char * argv[])
 	//if (parser_option(parserinfo, "m"))
 	{
 	}
+
+	parser_free (&parserinfo);
 	
 	return 0;
 }

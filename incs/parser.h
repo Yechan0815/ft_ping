@@ -4,9 +4,20 @@
 # include <stdbool.h>
 # include <string.h>
 # include <stdlib.h>
+# include <ctype.h>
 
 # define PARSER_MAX_FLAG 42
 # define PARSER_MAX_ARGUMENT 42
+
+typedef enum
+{
+	NO_ERROR,
+	BAD_FLAG,
+	BAD_FIELD,
+	FIELD_MISSING,
+
+	ALLOC_FAIL
+} PARSER_ERROR;
 
 typedef enum
 {
@@ -46,6 +57,11 @@ typedef struct
 
 typedef struct
 {
+	bool value_field;
+} PARSER_STATE;
+
+typedef struct
+{
 	PARSER_PARAMETER * parameters[PARSER_MAX_FLAG];
 	unsigned int size;
 } PARSER_ENV;
@@ -53,14 +69,35 @@ typedef struct
 typedef struct
 {
 	PARSER_ENV env;
-	PARSER_PARAMETER_VALUE * parse;
+	PARSER_PARAMETER_VALUE * parse[PARSER_MAX_FLAG];
+	unsigned int parse_size;
 	char * argument[PARSER_MAX_ARGUMENT];
+	unsigned int argument_size;
 } PARSER_INFO;
 
-void	parser_add (PARSER_ENV * env, char flag, char * type, char * description);
+/* error */
+void parser_error (PARSER_ERROR error);
+
+/* type */
+bool parser_is_digit (char * str);
+bool parser_value_field (PARSER_PRM type);
+
+/* parameter */
+PARSER_ERROR parser_new_parameter (PARSER_INFO * info, PARSER_PRM type);
+void parser_parameter_prepare (PARSER_INFO * info, PARSER_PRM type);
+PARSER_ERROR parser_parameter_assignment (PARSER_INFO * info, char * str);
+PARSER_ERROR parser_argument (PARSER_INFO * info, char * str);
+
+/* env */
+PARSER_PARAMETER * parser_get_parameter (PARSER_ENV * env, char flag);
+PARSER_ERROR parser_add (PARSER_ENV * env, char flag, char * type, char * description);
+
+/* free */
+void parser_free (PARSER_INFO * info);
+
+/* parser */
+bool parser (PARSER_INFO * info, int argc, char * argv[]);
 
 //void	parser_option (PARSER_INFO * info, char flag);
-
-int		parser (PARSER_INFO * info, int argc, char * argv[]);
 
 #endif
