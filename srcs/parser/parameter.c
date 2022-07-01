@@ -14,7 +14,7 @@ parser_argument (PARSER_INFO * info, char * str)
 }
 
 PARSER_ERROR
-parser_new_parameter (PARSER_INFO * info, PARSER_PRM type)
+parser_new_parameter (PARSER_INFO * info, char flag, PARSER_PRM type)
 {
 	unsigned int size;
 	PARSER_ERROR error = NO_ERROR;
@@ -39,6 +39,8 @@ parser_new_parameter (PARSER_INFO * info, PARSER_PRM type)
 	{
 		error = ALLOC_FAIL;
 	}
+	info->parse[info->parse_size]->flag = flag;
+	info->parse[info->parse_size]->type = type;
 	++info->parse_size;
 
 	return error;
@@ -76,6 +78,7 @@ parser_parameter_assignment (PARSER_INFO * info, char * str)
 		case PS_PRM_INT:
 			if (!parser_is_digit (str))
 			{
+				info->error_value = str;
 				error = BAD_FIELD;
 				break;
 			}
@@ -90,4 +93,3 @@ parser_parameter_assignment (PARSER_INFO * info, char * str)
 end:
 	return error;
 }
-

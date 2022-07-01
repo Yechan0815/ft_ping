@@ -19,8 +19,12 @@ parser_free_parameter (PARSER_PARAMETER_VALUE * prm)
 static void
 parser_free_env (PARSER_ENV * env)
 {
+	if (env->name)
+		free (env->name);
 	for (unsigned int i = 0; i < env->size; i++)
 	{
+		if (env->parameters[i]->name)
+			free (env->parameters[i]->name);
 		if (env->parameters[i]->description)
 			free (env->parameters[i]->description);
 		free (env->parameters[i]);

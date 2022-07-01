@@ -1,6 +1,7 @@
 #ifndef _PARSER_
 # define _PARSER_
 
+# include <stdio.h>
 # include <stdbool.h>
 # include <string.h>
 # include <stdlib.h>
@@ -15,6 +16,8 @@ typedef enum
 	BAD_FLAG,
 	BAD_FIELD,
 	FIELD_MISSING,
+
+	ARGUMENT_MISSING,
 
 	ALLOC_FAIL
 } PARSER_ERROR;
@@ -31,6 +34,7 @@ typedef struct
 {
 	char flag;
 	PARSER_PRM type;
+	char * name;
 	char * description;
 } PARSER_PARAMETER;
 
@@ -62,12 +66,16 @@ typedef struct
 
 typedef struct
 {
+	char * name;
+	unsigned int require_size;
 	PARSER_PARAMETER * parameters[PARSER_MAX_FLAG];
 	unsigned int size;
 } PARSER_ENV;
 
 typedef struct
 {
+	char error_flag;
+	char * error_value;
 	PARSER_ENV env;
 	PARSER_PARAMETER_VALUE * parse[PARSER_MAX_FLAG];
 	unsigned int parse_size;
@@ -76,21 +84,22 @@ typedef struct
 } PARSER_INFO;
 
 /* error */
-void parser_error (PARSER_ERROR error);
+void parser_error (PARSER_INFO * info, PARSER_ERROR error);
 
 /* type */
 bool parser_is_digit (char * str);
 bool parser_value_field (PARSER_PRM type);
 
 /* parameter */
-PARSER_ERROR parser_new_parameter (PARSER_INFO * info, PARSER_PRM type);
+PARSER_ERROR parser_new_parameter (PARSER_INFO * info, char flag, PARSER_PRM type);
 void parser_parameter_prepare (PARSER_INFO * info, PARSER_PRM type);
 PARSER_ERROR parser_parameter_assignment (PARSER_INFO * info, char * str);
 PARSER_ERROR parser_argument (PARSER_INFO * info, char * str);
 
 /* env */
 PARSER_PARAMETER * parser_get_parameter (PARSER_ENV * env, char flag);
-PARSER_ERROR parser_add (PARSER_ENV * env, char flag, char * type, char * description);
+PARSER_ERROR parser_add (PARSER_ENV * env, char flag, char * type, char * name, char * description);
+PARSER_ERROR parser_set(PARSER_ENV * env, char * name, unsigned int require);
 
 /* free */
 void parser_free (PARSER_INFO * info);

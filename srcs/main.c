@@ -7,8 +7,13 @@ main (int argc, char * argv[])
 	PARSER_INFO parserinfo;
 
 	memset (&parserinfo, 0x0, sizeof (PARSER_INFO));
-	parser_add(&parserinfo.env, 'f', "bool", "description 1");
-	parser_add(&parserinfo.env, 't', "int", "description 2");
+	parser_set(&parserinfo.env, "ft_ping", 1);
+	parser_add(&parserinfo.env, 'f', "bool", NULL, "description 1");
+	parser_add(&parserinfo.env, 't', "int", "TTL", "description 2");
+	parser_add(&parserinfo.env, 'Q', "int", "tos", "description 3");
+	parser_add(&parserinfo.env, 'T', "int", "timestamp option", "description 4");
+	parser_add(&parserinfo.env, 'W', "int", "timeout", "description 5");
+	parser_add(&parserinfo.env, 'P', "bool", NULL, NULL);
 
 	if (!parser(&parserinfo, argc, argv))
 		return 0;
