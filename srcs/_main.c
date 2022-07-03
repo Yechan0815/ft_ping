@@ -1,4 +1,3 @@
-#include "ft_ping.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -18,8 +17,6 @@
 # include <netinet/ip.h>
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
-
-
 
 int in_cksum(void *pp, int n )
 {
@@ -70,7 +67,7 @@ int		main(void)
 	addr.sin_port = 0;
     addr.sin_family = AF_INET;
 
-	getaddrinfo("8.8.8.9", NULL, &hints, &res);
+	getaddrinfo("8.8.8.8", NULL, &hints, &res);
 	addr.sin_addr.s_addr = ((struct sockaddr_in*)res->ai_addr)->sin_addr.s_addr;
 	
 //	printf(": %x\n", inet_addr("8.8.8.8"));

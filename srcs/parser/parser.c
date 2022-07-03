@@ -14,7 +14,7 @@ parser_handle_argument (PARSER_INFO * info, PARSER_STATE * state, char * str)
 			error = FIELD_MISSING;
 			goto end;
 		}
-		prm = parser_get_parameter (&info->env, *(str + 1));
+		prm = parser_get_env_parameter (&info->env, *(str + 1));
 		if (prm)
 		{
 			state->value_field = parser_value_field (prm->type);

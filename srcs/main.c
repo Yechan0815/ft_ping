@@ -18,9 +18,11 @@ main (int argc, char * argv[])
 	if (!parser(&parserinfo, argc, argv))
 		return 0;
 
-	//if (parser_option(parserinfo, "m"))
-	{
-	}
+	if (parser_option_bool(&parserinfo, 'f'))
+		printf("-f: true\n");
+
+	if (parser_option_bool(&parserinfo, 't'))
+		printf("-t: %d\n", parser_option_int(&parserinfo, 't'));
 
 	parser_free (&parserinfo);
 	

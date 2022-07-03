@@ -12,7 +12,7 @@ string_to_parser_type (char * type)
 }
 
 PARSER_PARAMETER *
-parser_get_parameter (PARSER_ENV * env, char flag)
+parser_get_env_parameter (PARSER_ENV * env, char flag)
 {
 	for (unsigned int i = 0; i < env->size; i++)
 	{

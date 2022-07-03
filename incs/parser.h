@@ -97,7 +97,7 @@ PARSER_ERROR parser_parameter_assignment (PARSER_INFO * info, char * str);
 PARSER_ERROR parser_argument (PARSER_INFO * info, char * str);
 
 /* env */
-PARSER_PARAMETER * parser_get_parameter (PARSER_ENV * env, char flag);
+PARSER_PARAMETER * parser_get_env_parameter (PARSER_ENV * env, char flag);
 PARSER_ERROR parser_add (PARSER_ENV * env, char flag, char * type, char * name, char * description);
 PARSER_ERROR parser_set(PARSER_ENV * env, char * name, unsigned int require);
 
@@ -107,6 +107,8 @@ void parser_free (PARSER_INFO * info);
 /* parser */
 bool parser (PARSER_INFO * info, int argc, char * argv[]);
 
-//void	parser_option (PARSER_INFO * info, char flag);
+/* option */
+int parser_option_int (PARSER_INFO * info, char flag);
+bool parser_option_bool (PARSER_INFO * info, char flag);
 
 #endif

@@ -1,0 +1,14 @@
+-v			verbose
+-h			도움말 (v)
+-f			flood mode
+-I (i)		interface (랜카드 지정)
+-l (L)		응답을  기다리지 않고 바로바로 전송
+-m			SO-MARK...?
+-M			단편화 옵션
+-n			도메인 없이 ip 주소로만 출력
+-p			payload 패턴을 지정
+-Q			QoS의 비트를 설정
+-S			SO-SNDBUF 값을 설정
+-t			TTL 설정
+-w			해당 시간 이후 종료
+-W			timeout 설정
