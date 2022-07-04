@@ -38,3 +38,16 @@ parser_option_int (PARSER_INFO * info, char flag)
 	}
 	return ((PARSER_PARAMETER_INT *) prm)->value;
 }
+
+char *
+parser_option_string (PARSER_INFO * info, char flag)
+{
+	PARSER_PARAMETER_VALUE * prm;
+
+	prm = parser_get_parameter (info, flag);
+	if (!prm)
+	{
+		return NULL;
+	}
+	return ((PARSER_PARAMETER_STRING *) prm)->value;
+}

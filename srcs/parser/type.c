@@ -3,6 +3,10 @@
 bool
 parser_is_digit (char * str)
 {
+	if (*str == '+' || *str == '-')
+		str++;
+	if (!*str)
+		return false;
 	for (int i = 0; i < strlen(str); i++)
 	{
 		if (!isdigit (str[i]))
@@ -21,6 +25,10 @@ parser_value_field (PARSER_PRM type)
 	switch (type)
 	{
 		case PS_PRM_INT:
+			boolean = true;
+			break;
+
+		case PS_PRM_STRING:
 			boolean = true;
 			break;
 

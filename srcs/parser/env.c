@@ -7,6 +7,8 @@ string_to_parser_type (char * type)
 		return PS_PRM_BOOL;
 	else if (!strcmp (type, "int"))
 		return PS_PRM_INT;
+	else if (!strcmp (type, "string"))
+		return PS_PRM_STRING;
 
 	return PS_PRM_UNKNOWN;
 }

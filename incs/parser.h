@@ -26,6 +26,7 @@ typedef enum
 {
 	PS_PRM_BOOL,
 	PS_PRM_INT,
+	PS_PRM_STRING,
 
 	PS_PRM_UNKNOWN
 } PARSER_PRM;
@@ -61,6 +62,13 @@ typedef struct
 
 typedef struct
 {
+	char flag;
+	PARSER_PRM type;
+	char * value;
+} PARSER_PARAMETER_STRING;
+
+typedef struct
+{
 	bool value_field;
 } PARSER_STATE;
 
@@ -85,6 +93,7 @@ typedef struct
 
 /* error */
 void parser_error (PARSER_INFO * info, PARSER_ERROR error);
+void parser_error_msg (PARSER_INFO * info, char * msg);
 
 /* type */
 bool parser_is_digit (char * str);
@@ -108,7 +117,11 @@ void parser_free (PARSER_INFO * info);
 bool parser (PARSER_INFO * info, int argc, char * argv[]);
 
 /* option */
-int parser_option_int (PARSER_INFO * info, char flag);
 bool parser_option_bool (PARSER_INFO * info, char flag);
+int parser_option_int (PARSER_INFO * info, char flag);
+char * parser_option_string (PARSER_INFO * info, char flag);
+
+/* argument */
+char * parser_argument_last (PARSER_INFO * info);
 
 #endif

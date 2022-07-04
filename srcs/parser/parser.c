@@ -6,6 +6,13 @@ parser_handle_argument (PARSER_INFO * info, PARSER_STATE * state, char * str)
 	PARSER_PARAMETER * prm;
 	PARSER_ERROR error = NO_ERROR;
 	
+	if (state->value_field)
+	{
+		error = parser_parameter_assignment (info, str);
+		state->value_field = false;
+		goto end;
+	}
+
 	if (*str == '-')
 	{
 		info->error_flag = *(str + 1);
@@ -30,14 +37,7 @@ parser_handle_argument (PARSER_INFO * info, PARSER_STATE * state, char * str)
 			error = BAD_FLAG;
 		}
 		goto end;
-	}
-
-	if (state->value_field)
-	{
-		error = parser_parameter_assignment (info, str);
-		state->value_field = false;
-		goto end;
-	}
+	}	
 
 	parser_argument (info, str);
 

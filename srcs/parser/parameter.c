@@ -19,20 +19,12 @@ parser_new_parameter (PARSER_INFO * info, char flag, PARSER_PRM type)
 	unsigned int size;
 	PARSER_ERROR error = NO_ERROR;
 
-	switch (type)
-	{
-		case PS_PRM_BOOL:
-			size = sizeof (PARSER_PARAMETER_BOOL);
-			break;
-
-		case PS_PRM_INT:
-			size = sizeof (PARSER_PARAMETER_INT);
-			break;
-
-		case PS_PRM_UNKNOWN:
-			size = sizeof (PARSER_PARAMETER_VALUE);
-			break;
-	}
+	size = (long unsigned int []) {
+		sizeof (PARSER_PARAMETER_BOOL),
+		sizeof (PARSER_PARAMETER_INT),
+		sizeof (PARSER_PARAMETER_STRING),
+		sizeof (PARSER_PARAMETER_VALUE)
+	} [type];
 
 	info->parse[info->parse_size] = (PARSER_PARAMETER_VALUE *) malloc (size);
 	if (!info->parse[info->parse_size])
@@ -61,6 +53,9 @@ parser_parameter_prepare (PARSER_INFO * info, PARSER_PRM type)
 		case PS_PRM_INT:
 			((PARSER_PARAMETER_INT *) prm)->value = 0;
 
+		case PS_PRM_STRING:
+			((PARSER_PARAMETER_STRING *) prm)->value = NULL;
+
 		case PS_PRM_UNKNOWN:
 			prm->value = NULL;
 			break;
@@ -83,6 +78,10 @@ parser_parameter_assignment (PARSER_INFO * info, char * str)
 				break;
 			}
 			((PARSER_PARAMETER_INT *) prm)->value = atoi (str);
+			break;
+
+		case PS_PRM_STRING:
+			((PARSER_PARAMETER_STRING *) prm)->value = strdup (str);
 			break;
 
 		case PS_PRM_BOOL:

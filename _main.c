@@ -18,6 +18,7 @@
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
 
+
 int in_cksum(void *pp, int n )
 {
 	 u_short *p = (u_short *) pp;
@@ -33,13 +34,16 @@ int in_cksum(void *pp, int n )
     }/* WHILE */
 
 
-    /* mop up an odd byte, if necessary */
+	/*
     if( n == 1 )
     {
         *( u_char* )( &odd_byte ) = *( u_char* )p;
         sum += odd_byte;
-    
-    }/* IF */
+	}*/
+	if (n==1)
+	{
+		odd_byte = (*p);
+	}
 
     sum = ( sum >> 16 ) + ( sum & 0xffff );    /* add hi 16 to low 16 */
     sum += ( sum >> 16 );                    /* add carry */
@@ -49,7 +53,8 @@ int in_cksum(void *pp, int n )
 
 } /* in_cksum() */
 	
-
+#include <net/if.h>
+#include <sys/ioctl.h>
 int		main(void)
 {
 	char buffer[1024];
@@ -83,6 +88,7 @@ int		main(void)
 	iph->ttl = 64;
 	iph->protocol = IPPROTO_ICMP;
 	iph->check = 0;
+	//iph->saddr = inet_addr("192.168.222.130");//INADDR_ANY;
 	iph->saddr = INADDR_ANY;
 	iph->daddr = addr.sin_addr.s_addr;
 
@@ -101,6 +107,7 @@ int		main(void)
 		printf("error\n");
 		return 0;
 	}
+
 	if (setsockopt(sock, IPPROTO_IP, IP_HDRINCL, (int[1]) { 1 }, sizeof(int)) < 0)
 	{
 		printf("error\n");

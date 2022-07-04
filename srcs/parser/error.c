@@ -29,7 +29,7 @@ parser_help (PARSER_INFO * info)
 		else
 			printf("] ");
 	}
-	printf("{destination}\n\nOPTIONS\n");
+	printf("{destination}\n\nOPTIONS:\n");
 	for (unsigned int i = 0; i < info->env.size; i++)
 	{
 		printf("       -%c", info->env.parameters[i]->flag);
@@ -77,5 +77,12 @@ parser_error (PARSER_INFO * info, PARSER_ERROR error)
 			break;
 	}
 	printf("\n\n");
+	parser_help (info);
+}
+
+void
+parser_error_msg (PARSER_INFO * info, char * msg)
+{
+	printf("%s: %s\n\n", info->env.name, msg);
 	parser_help (info);
 }

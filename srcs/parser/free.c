@@ -11,6 +11,13 @@ parser_free_parameter (PARSER_PARAMETER_VALUE * prm)
 		case PS_PRM_INT:
 			break;
 
+		case PS_PRM_STRING:
+			if (((PARSER_PARAMETER_STRING *) prm)->value)
+			{
+				free(((PARSER_PARAMETER_STRING *) prm)->value);
+			}
+			break;
+
 		case PS_PRM_UNKNOWN:
 			break;
 	}
