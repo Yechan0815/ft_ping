@@ -51,6 +51,10 @@ network_analysis (ping_t * ping)
 			network_statistic (ping);
 			break;
 
+		case ICMP_ECHO:
+			network_error_echo (ping);
+			break;
+
 		case ICMP_TIME_EXCEEDED:
 			network_error_time_exceeded (ping);
 			break;

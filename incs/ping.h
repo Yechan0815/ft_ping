@@ -7,6 +7,8 @@
 # include <netinet/ip.h>
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
+# include <sys/ioctl.h>
+# include <net/if.h>
 # include <netdb.h>
 # include <sys/time.h>
 # include <stdbool.h>
@@ -60,7 +62,10 @@ struct ping
 		bool verbose;
 		bool nodns;
 		int sndbuf;
+		int preload;
 		int deadline;
+		int timeout;
+		char * interface;
 	} flag;
 
 	unsigned int sent;
@@ -82,6 +87,7 @@ void network_statistics (ping_t * ping);
 
 void network_show_packet (struct packet * obj);
 
+void network_error_echo (ping_t * ping);
 void network_error_time_exceeded (ping_t * ping);
 void network_error_default (ping_t * ping);
 

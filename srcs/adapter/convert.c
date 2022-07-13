@@ -35,9 +35,12 @@ init (ping_t * ping)
 	icmpheader->un.echo.id = htons (42);
 	
 	ping->flag.verbose = false;
+	ping->flag.interface = NULL;
 	ping->flag.nodns = false;
 	ping->flag.sndbuf = -1;
+	ping->flag.preload = -1;
 	ping->flag.deadline = -1;
+	ping->flag.timeout = -1;
 }
 
 static void
@@ -48,6 +51,7 @@ pattern (ping_t * ping, char * str)
 	char bit;
 	int written;
 	int size;
+	int sender;
 
 	pattern_buffer[32] = 0;
 	strncpy (pattern_buffer, str, 32);
@@ -58,17 +62,17 @@ pattern (ping_t * ping, char * str)
 		return ;
 	}
 	written = 0;
-	while (PAYLOAD_SIZE * 8 / 4 - written > 0)
+	while (PAYLOAD_SIZE * 8 / 4 - written >= 0)
 	{
 		strncpy (buffer + written, pattern_buffer, size);
 		written += size;
 	}
 	buffer[PAYLOAD_SIZE * 2] = 0;
-	printf ("%s\n", buffer);
+	sender = 0;
 	for (int i = 0; i < PAYLOAD_SIZE * 2; i += 2)
 	{
 		bit = (char) (hex_to_int (buffer[i]) << 4 | hex_to_int (buffer[i + 1]));
-		printf ("%d\n", bit);
+		ping->sender.buffer[++sender + IP_HEADER_SIZE + ICMP_HEADER_SIZE] = bit;
 	}
 }
 
@@ -126,44 +130,66 @@ convert (ping_t * ping, PARSER_INFO * parserinfo)
 	}
 	if (parser_option_bool (parserinfo, 'S'))
 	{
-		if (parser_option_int(parserinfo, 'S') < 1)
+		if (parser_option_int (parserinfo, 'S') < 1)
 		{
 			parser_error_msg (parserinfo, "out of range: 1 <= value <= 2147483647");
 			return false;
 		}
-		ping->flag.sndbuf = parser_option_int(parserinfo, 'S');
+		ping->flag.sndbuf = parser_option_int (parserinfo, 'S');
 	}
 	if (parser_option_bool (parserinfo, 'w'))
 	{
-		if (parser_option_int(parserinfo, 'w') < 0)
+		if (parser_option_int (parserinfo, 'w') < 0)
 		{
 			parser_error_msg (parserinfo, "out of range: 0 <= value <= 2147483647");
 			return false;
 		}
-		ping->flag.deadline = parser_option_int(parserinfo, 'w');
+		ping->flag.deadline = parser_option_int (parserinfo, 'w');
 	}
-
+	if (parser_option_bool (parserinfo, 'W'))
+	{
+		if (parser_option_int (parserinfo, 'W') < 0)
+		{
+			parser_error_msg (parserinfo, "out of range: 0 <= value <= 2147483647");
+			return false;
+		}
+		if (parser_option_int (parserinfo, 'W') != 0)
+		{
+			ping->flag.timeout = parser_option_int (parserinfo, 'W');
+		}
+	}
 	if (parser_option_bool (parserinfo, 'I'))
-		printf("-I: %s\n", parser_option_string(parserinfo, 'I'));
+	{
+		ping->flag.interface = parser_option_string (parserinfo, 'I');
+	}
+	if (parser_option_bool (parserinfo, 'l'))
+	{
+		ping->flag.preload = parser_option_int (parserinfo, 'l');
+		if (ping->flag.preload < 1 || ping->flag.preload > 65536)
+		{
+			parser_error_msg (parserinfo, "out of range: 1 <= value <= 65536");
+			return false;
+		}
+	}	
 
 	if (parser_option_bool (parserinfo, 'p'))
 	{
-		if (!is_argu_hex (parser_option_string(parserinfo, 'p')))
+		if (!is_argu_hex (parser_option_string (parserinfo, 'p')))
 		{
 			parser_error_msg (parserinfo, "patterns must be specified as hex digits");
 			return false;
 		}
-		pattern (ping, parser_option_string(parserinfo, 'p'));
+		pattern (ping, parser_option_string (parserinfo, 'p'));
 	}
 
 	if (parser_option_bool (parserinfo, 't'))
 	{
-		if (parser_option_int(parserinfo, 't') < 1 || parser_option_int(parserinfo, 't') > 255)
+		if (parser_option_int (parserinfo, 't') < 1 || parser_option_int (parserinfo, 't') > 255)
 		{
 			parser_error_msg (parserinfo, "out of range: 1 <= value <= 255");
 			return false;
 		}
-		ping->sender.header.ip->ttl = parser_option_int(parserinfo, 't');
+		ping->sender.header.ip->ttl = parser_option_int (parserinfo, 't');
 	}
 
 	if (!destination (ping, parser_argument_last (parserinfo)))

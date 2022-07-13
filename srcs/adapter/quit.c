@@ -26,5 +26,6 @@ fatal (ping_t * ping)
 	if (ping->sockfd > 0)
 		close (ping->sockfd);
 	ping_free (ping);
+
 	exit (EXIT_SUCCESS);
 }

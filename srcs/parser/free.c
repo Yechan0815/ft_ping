@@ -27,7 +27,9 @@ static void
 parser_free_env (PARSER_ENV * env)
 {
 	if (env->name)
+	{
 		free (env->name);
+	}
 	for (unsigned int i = 0; i < env->size; i++)
 	{
 		if (env->parameters[i]->name)
@@ -45,6 +47,7 @@ parser_free (PARSER_INFO * info)
 	for (unsigned int i = 0; i < info->parse_size; i++)
 	{
 		parser_free_parameter (info->parse[i]);
+		free (info->parse[i]);
 	}
 	for (unsigned int i = 0; i < info->argument_size; i++)
 	{

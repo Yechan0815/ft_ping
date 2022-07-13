@@ -36,6 +36,8 @@ parser_add (PARSER_ENV * env, char flag, char * type, char * name, char * descri
 	}
 	prm->flag = flag;
 	prm->type = string_to_parser_type (type);
+	prm->name = NULL;
+	prm->description = NULL;
 	if (name)
 	{
 		prm->name = strdup(name);

@@ -52,9 +52,11 @@ parser_parameter_prepare (PARSER_INFO * info, PARSER_PRM type)
 
 		case PS_PRM_INT:
 			((PARSER_PARAMETER_INT *) prm)->value = 0;
+			break;
 
 		case PS_PRM_STRING:
 			((PARSER_PARAMETER_STRING *) prm)->value = NULL;
+			break;
 
 		case PS_PRM_UNKNOWN:
 			prm->value = NULL;
@@ -89,6 +91,5 @@ parser_parameter_assignment (PARSER_INFO * info, char * str)
 			break;
 	}
 
-end:
 	return error;
 }

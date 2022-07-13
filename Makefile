@@ -1,5 +1,5 @@
 CC			= gcc
-CFLAGS		= #-Wall -Wextra -Werror
+CFLAGS		= -Wall -Wextra -Werror
 
 MAIN		= main.c
 PARSER		= parser.c type.c env.c parameter.c argument.c option.c error.c free.c

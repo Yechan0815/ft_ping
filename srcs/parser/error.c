@@ -49,7 +49,7 @@ parser_help (PARSER_INFO * info)
 void
 parser_error (PARSER_INFO * info, PARSER_ERROR error)
 {
-	switch (error)
+	switch ((int) error)
 	{
 		case BAD_FLAG:
 			if (info->error_flag == 'h')

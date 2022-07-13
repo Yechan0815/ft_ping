@@ -94,6 +94,8 @@ network_receive (ping_t * ping)
 bool
 network_init (ping_t * ping)
 {
+	struct ifreq ifr;
+
 	ping->sockfd = socket (PF_INET, SOCK_RAW, IPPROTO_ICMP);
 	if (ping->sockfd < 0)
 	{
@@ -110,6 +112,22 @@ network_init (ping_t * ping)
 		if (setsockopt (ping->sockfd, SOL_SOCKET, SO_SNDBUF, (int [1]) { ping->flag.sndbuf }, sizeof (int)) < 0)
 		{
 			printf ("ft_ping: %s\n", strerror (errno));
+			return false;
+		}
+	}
+	if (ping->flag.interface)
+	{
+		memset (&ifr, 0, sizeof(struct ifreq));
+		strncpy (ifr.ifr_name, ping->flag.interface,
+				sizeof (ifr.ifr_name) > sizeof (ping->flag.interface) ? sizeof (ping->flag.interface) : sizeof (ifr.ifr_name));
+		if (ioctl (ping->sockfd, SIOCGIFINDEX, &ifr))
+		{
+			printf ("ft_ping: SO_BINDTODEVICE %s: %s\n", ping->flag.interface, strerror (errno));
+			return false;
+		}
+		if (setsockopt (ping->sockfd, SOL_SOCKET, SO_BINDTODEVICE, (void *) &ifr, sizeof (struct ifreq)) < 0)
+		{
+			printf ("ft_ping: SO_BINDTODEVICE %s: %s\n", ping->flag.interface, strerror (errno));
 			return false;
 		}
 	}

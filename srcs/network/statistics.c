@@ -55,7 +55,7 @@ network_statistic (ping_t * ping)
 	+ (ping->receiver.time.tv_usec - ping->sender.time.tv_usec);
 
 	printf ("%d bytes from %s: icmp_seq=%d ttl=%d time=%ld.%ld ms\n",
-			ping->receiver.bytes - IP_HEADER_SIZE,
+			ping->receiver.bytes,
 			ping->destination,
 			ping->receiver.sequence,
 			ping->receiver.header.ip->ttl,

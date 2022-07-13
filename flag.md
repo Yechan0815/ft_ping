@@ -1,8 +1,0 @@
--v			verbose
--h			도움말 (v)
--I (i)		interface (랜카드 지정)
--n			도메인 없이 ip 주소로만 출력
--p			payload 패턴을 지정
--S			SO_SNDBUF 값을 설정
--t			TTL 설정
--w			해당 시간 이후 종료

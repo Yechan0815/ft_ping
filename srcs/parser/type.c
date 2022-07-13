@@ -7,7 +7,7 @@ parser_is_digit (char * str)
 		str++;
 	if (!*str)
 		return false;
-	for (int i = 0; i < strlen(str); i++)
+	for (unsigned int i = 0; i < strlen(str); i++)
 	{
 		if (!isdigit (str[i]))
 		{

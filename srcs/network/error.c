@@ -1,6 +1,23 @@
 #include "ping.h"
 
 void
+network_error_echo (ping_t * ping)
+{
+	/* throw away */
+	if (ping->sender.sequence > 1)
+		--ping->sender.sequence;
+	--ping->receiver.sequence;
+	if (ping->flag.verbose)
+	{
+		printf ("%d bytes from %s: Loop-back Type=%d Code=%d\n",
+				ping->receiver.bytes - IP_HEADER_SIZE,
+				ping->destination,
+				ping->receiver.header.icmp->type,
+				ping->receiver.header.icmp->code);
+	}
+}
+
+void
 network_error_time_exceeded (ping_t * ping)
 {
 	++ping->error;
