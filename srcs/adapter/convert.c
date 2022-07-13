@@ -40,6 +40,38 @@ init (ping_t * ping)
 	ping->flag.deadline = -1;
 }
 
+static void
+pattern (ping_t * ping, char * str)
+{
+	char pattern_buffer[128];
+	char buffer[256];
+	char bit;
+	int written;
+	int size;
+
+	pattern_buffer[32] = 0;
+	strncpy (pattern_buffer, str, 32);
+	printf ("PATTERN: 0x%s\n", pattern_buffer);
+	size = strlen (pattern_buffer);
+	if (!*str || size < 1)
+	{
+		return ;
+	}
+	written = 0;
+	while (PAYLOAD_SIZE * 8 / 4 - written > 0)
+	{
+		strncpy (buffer + written, pattern_buffer, size);
+		written += size;
+	}
+	buffer[PAYLOAD_SIZE * 2] = 0;
+	printf ("%s\n", buffer);
+	for (int i = 0; i < PAYLOAD_SIZE * 2; i += 2)
+	{
+		bit = (char) (hex_to_int (buffer[i]) << 4 | hex_to_int (buffer[i + 1]));
+		printf ("%d\n", bit);
+	}
+}
+
 static bool
 destination (ping_t * ping, char * dest)
 {
@@ -47,17 +79,35 @@ destination (ping_t * ping, char * dest)
 		.ai_family = AF_INET
 	};
 	struct addrinfo *result;
+	char buffer[128];
 
 	if (getaddrinfo (dest, NULL, &hints, &result))
 	{
 		printf ("ft_ping: %s: Name or service not known\n", dest);
 		return false;
 	}
-	ping->domain = dest;
+	ping->domain = strdup (dest);
+	if (!ping->domain)
+	{
+		printf ("ft_ping: %s\n", strerror (errno));
+		return false;
+	}
 	ping->address.sin_addr.s_addr = ((struct sockaddr_in *) result->ai_addr)->sin_addr.s_addr;
 	ping->sender.header.ip->daddr = ping->address.sin_addr.s_addr;
 	freeaddrinfo (result);
 
+	if (!inet_ntop (AF_INET, (void *) &ping->sender.header.ip->daddr, buffer, sizeof (buffer)))
+	{
+		printf ("ft_ping: %s\n", strerror (errno));
+		return false;
+	}
+
+	ping->destination = strdup (buffer);
+	if (!ping->destination)
+	{
+		printf ("ft_ping: %s\n", strerror (errno));
+		return false;
+	}
 	return true;
 }
 
@@ -97,7 +147,14 @@ convert (ping_t * ping, PARSER_INFO * parserinfo)
 		printf("-I: %s\n", parser_option_string(parserinfo, 'I'));
 
 	if (parser_option_bool (parserinfo, 'p'))
-		printf("-p: %s\n", parser_option_string(parserinfo, 'p'));
+	{
+		if (!is_argu_hex (parser_option_string(parserinfo, 'p')))
+		{
+			parser_error_msg (parserinfo, "patterns must be specified as hex digits");
+			return false;
+		}
+		pattern (ping, parser_option_string(parserinfo, 'p'));
+	}
 
 	if (parser_option_bool (parserinfo, 't'))
 	{

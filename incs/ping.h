@@ -8,10 +8,14 @@
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
 # include <netdb.h>
+# include <sys/time.h>
 # include <stdbool.h>
-# include <errno.h>
 # include <stdio.h>
+# include <stdlib.h>
 # include <string.h>
+# include <unistd.h>
+# include <signal.h>
+# include <errno.h>
 
 # define IP_HEADER_SIZE 20
 # define ICMP_HEADER_SIZE 8
@@ -22,19 +26,21 @@ typedef struct packet packet_t;
 struct packet
 {
 	unsigned int sequence;
+	unsigned int bytes;
+	struct timeval time;
 
 	struct
 	{
 		struct iphdr * ip;
 		struct icmphdr * icmp;
 	} header;
-	char buffer[1024];
+	char buffer[258];
 };
 
 typedef struct timelog timelog_t;
 struct timelog
 {
-	unsigned int time;
+	long time;
 	timelog_t * next;
 };
 
@@ -43,12 +49,11 @@ struct ping
 {
 	int sockfd;
 	char * domain;
+	char * destination;
 	struct sockaddr_in address;
 
 	packet_t sender;
 	packet_t receiver;
-
-	timelog_t * timelog;
 
 	struct
 	{
@@ -57,12 +62,31 @@ struct ping
 		int sndbuf;
 		int deadline;
 	} flag;
+
+	unsigned int sent;
+	unsigned int received;
+	unsigned int error;
+
+	timelog_t * timelog;
+	struct timeval start;
 };
 
 /* function */
 
 bool network_init (ping_t * ping);
-bool network_send (ping_t * ping);
-bool network_receive (ping_t * ping);
+void network_send (ping_t * ping);
+void network_receive (ping_t * ping);
+void network_analysis (ping_t * ping);
+void network_statistic (ping_t * ping);
+void network_statistics (ping_t * ping);
+
+void network_show_packet (struct packet * obj);
+
+void network_error_time_exceeded (ping_t * ping);
+void network_error_default (ping_t * ping);
+
+void ping_free (ping_t * ping);
+
+void fatal (ping_t * ping);
 
 #endif

@@ -3,12 +3,12 @@ CFLAGS		= #-Wall -Wextra -Werror
 
 MAIN		= main.c
 PARSER		= parser.c type.c env.c parameter.c argument.c option.c error.c free.c
-CONVERT		= convert.c
-NETWORK		= network.c
+ADAPTER		= convert.c time.c type.c quit.c
+NETWORK		= network.c analysis.c statistics.c error.c
 
 SRCS		= $(addprefix srcs/, $(MAIN)) \
 			  $(addprefix srcs/parser/, $(PARSER)) \
-			  $(addprefix srcs/convert/, $(CONVERT)) \
+			  $(addprefix srcs/adapter/, $(ADAPTER)) \
 			  $(addprefix srcs/network/, $(NETWORK))
 
 INCS		= incs/

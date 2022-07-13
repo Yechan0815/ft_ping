@@ -20,17 +20,25 @@ checksum (unsigned short * pointer, int size)
     return ~result;
 }
 
-bool
+void
 network_send (ping_t * ping)
 {
+	char buffer[258];
 	int bytes;
 
 	++ping->sender.sequence;
+	memcpy (buffer, ping->sender.buffer, 258);
 	ping->sender.header.icmp->un.echo.sequence = htons (ping->sender.sequence);
 	ping->sender.header.icmp->checksum = checksum (
 			(unsigned short *) (ping->sender.buffer + IP_HEADER_SIZE),
 			PACKET_SIZE - IP_HEADER_SIZE
 			);
+	if (ping->flag.verbose)
+	{
+		printf (" - send - \n");
+		network_show_packet (&ping->sender);
+	}
+	gettimeofday(&ping->sender.time, NULL);
 	bytes = sendto (ping->sockfd,
 			ping->sender.buffer,
 			PACKET_SIZE,
@@ -40,20 +48,22 @@ network_send (ping_t * ping)
 	if (bytes < 0)
 	{
 		printf ("ft_ping: %s\n", strerror (errno));
-		return false;
-	}
-	return true;
+		fatal (ping);
+	}	
+	ping->sender.bytes = bytes - IP_HEADER_SIZE;
+	ping->sent += ping->sender.bytes;
+	memcpy (ping->sender.buffer, buffer, 258);
 }
 
-bool
+void
 network_receive (ping_t * ping)
 {
-	char buffer[1024];
+	char buffer[258];
 	int bytes;
 
 	struct iovec iov = {
 		.iov_base = ping->receiver.buffer,
-		.iov_len = PACKET_SIZE
+		.iov_len = sizeof (ping->receiver.buffer)
 	};
 	struct msghdr msg = {
 		.msg_name = &ping->address,
@@ -69,10 +79,16 @@ network_receive (ping_t * ping)
 	if (bytes < 0)
 	{
 		printf ("ft_ping: %s\n", strerror (errno));
-		return false;
+		fatal (ping);
 	}
+	gettimeofday(&ping->receiver.time, NULL);
+	if (ping->flag.verbose)
+	{
+		printf (" - receive - \n");
+		network_show_packet (&ping->receiver);
+	}
+	ping->receiver.bytes = bytes - IP_HEADER_SIZE;
 	++ping->receiver.sequence;
-	return true;
 }
 
 bool
@@ -88,6 +104,14 @@ network_init (ping_t * ping)
 	{
 		printf ("ft_ping: %s\n", strerror (errno));
 		return false;
+	}
+	if (ping->flag.sndbuf != -1)
+	{
+		if (setsockopt (ping->sockfd, SOL_SOCKET, SO_SNDBUF, (int [1]) { ping->flag.sndbuf }, sizeof (int)) < 0)
+		{
+			printf ("ft_ping: %s\n", strerror (errno));
+			return false;
+		}
 	}
 	return true;
 }

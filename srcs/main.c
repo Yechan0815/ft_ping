@@ -2,6 +2,56 @@
 #include "parser.h"
 #include "convert.h"
 
+ping_t ping;
+
+void
+sigint_handler (int signo)
+{
+	printf ("\n");
+
+	network_statistics (&ping);
+
+	close (ping.sockfd);
+	ping_free (&ping);
+
+	exit (EXIT_SUCCESS);
+}
+
+void
+sigalrm_handler (int signo)
+{
+	struct timeval now;
+	long time;
+
+	gettimeofday(&now, NULL);
+	time = (now.tv_sec - ping.start.tv_sec) + (now.tv_usec - ping.start.tv_usec) / 1000000;
+
+	if (ping.flag.deadline != -1 && time >= ping.flag.deadline)
+	{
+		sigint_handler (0);
+	}
+
+	network_send (&ping);
+
+	alarm (1);
+}
+
+void
+ping_loop ()
+{
+	printf ("PING %s (%s) %d(%d) bytes of data.\n", ping.domain, ping.destination, PAYLOAD_SIZE, PACKET_SIZE);
+	gettimeofday(&ping.start, NULL);
+
+	network_send (&ping);
+	alarm (1);
+
+	while (42)
+	{
+		network_receive (&ping);
+		network_analysis (&ping);
+	}
+}
+
 bool
 parse (PARSER_INFO * parserinfo, int argc, char * argv[])
 {
@@ -24,7 +74,6 @@ int
 main (int argc, char * argv[])
 {
 	PARSER_INFO parserinfo;
-	ping_t ping;
 
 	if (!parse (&parserinfo, argc, argv))
 	{
@@ -35,11 +84,12 @@ main (int argc, char * argv[])
 		parser_free (&parserinfo);
 		return 0;
 	}
-
-	network_send (&ping);
-	network_receive (&ping);
-
 	parser_free (&parserinfo);
-	
+
+	signal(SIGINT, sigint_handler);
+	signal(SIGALRM, sigalrm_handler);
+
+	ping_loop ();
+
 	return 0;
 }
