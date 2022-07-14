@@ -70,4 +70,6 @@ make re
 
 # Usage
 
+**must be run with `sudo` to bind the socket**
+
 ![ubuntu-ping](https://user-images.githubusercontent.com/12230655/178921601-f833dd7f-fbe7-4060-81ae-cfa5b47ce97a.png)
