@@ -40,7 +40,7 @@ init (ping_t * ping)
 	ping->flag.sndbuf = -1;
 	ping->flag.preload = -1;
 	ping->flag.deadline = -1;
-	ping->flag.timeout = -1;
+	ping->flag.timeout = 10;
 }
 
 static void
@@ -153,9 +153,10 @@ convert (ping_t * ping, PARSER_INFO * parserinfo)
 			parser_error_msg (parserinfo, "out of range: 0 <= value <= 2147483647");
 			return false;
 		}
-		if (parser_option_int (parserinfo, 'W') != 0)
+		ping->flag.timeout = parser_option_int (parserinfo, 'W');
+		if (parser_option_int (parserinfo, 'W') == 0)
 		{
-			ping->flag.timeout = parser_option_int (parserinfo, 'W');
+			ping->flag.timeout = 10;
 		}
 	}
 	if (parser_option_bool (parserinfo, 'I'))
