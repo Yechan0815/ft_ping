@@ -18,10 +18,10 @@ NAME		= ft_ping
 
 
 
+all			:	$(NAME)
+
 $(OBJS)		:	objs/%.o : srcs/%.c
 				$(CC) $(CFLAGS) -c $< -o $@ -I$(INCS)
-
-all			:	$(NAME)
 
 $(NAME)		:	$(OBJS)
 				$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
