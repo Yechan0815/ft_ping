@@ -1,4 +1,4 @@
-# ft_ping
+# Ping
 
 Sends ICMP packets for echo to network host.
 
