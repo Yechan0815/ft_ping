@@ -14,7 +14,7 @@ SRCS		= $(addprefix srcs/, $(MAIN)) \
 INCS		= incs/
 OBJS		= $(SRCS:srcs/%.c=objs/%.o)
 
-NAME		= ft_ping
+NAME		= ping
 
 
 
